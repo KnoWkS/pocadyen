@@ -56,4 +56,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Jetpack Compose
+    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Adyen Mobile SDK - debug version (test only)
+    val adyenVersion = "2.2.0"
+    debugImplementation("com.adyen.ipp:pos-mobile-debug:$adyenVersion")
+    debugImplementation("com.adyen.ipp:payment-tap-to-pay-debug:$adyenVersion")
+    debugImplementation("com.adyen.ipp:payment-card-reader-debug:$adyenVersion")
+
+    // JSON (si nécessaire)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
