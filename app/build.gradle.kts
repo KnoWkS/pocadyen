@@ -73,7 +73,15 @@ dependencies {
     debugImplementation("com.adyen.ipp:pos-mobile-debug:$adyenVersion")
     debugImplementation("com.adyen.ipp:payment-tap-to-pay-debug:$adyenVersion")
     debugImplementation("com.adyen.ipp:payment-card-reader-debug:$adyenVersion")
+    implementation("com.adyen.ipp:pos-mobile:$adyenVersion")
+    implementation("com.adyen.ipp:payment-tap-to-pay:$adyenVersion")
 
-    // JSON (si nécessaire)
+
+    // JSON
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("org.json:json:20231018")
+    // OkHttp (client HTTP)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+
 }
