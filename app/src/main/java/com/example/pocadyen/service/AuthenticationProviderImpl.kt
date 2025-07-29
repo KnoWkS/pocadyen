@@ -1,43 +1,52 @@
-package com.example.pocadyen.service
+package com.example.pocadyen.data.authentication
 
-import com.adyen.ipp.authentication.AuthenticationProvider
-import com.adyen.ipp.authentication.AuthenticationResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONObject
+import okhttp3.RequestBody.Companion.toRequestBody
 
-class AuthenticationProviderImpl : AuthenticationProvider() {
+@Serializable
+data class SetupTokenRequest(
+    val amount: Int,
+    val currency: String,
+    val countryCode: String,
+    val shopperReference: String,
+    val reference: String
+)
 
-    override suspend fun authenticate(setupToken: String): Result<AuthenticationResponse> {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Remplace par ton endpoint de test (backend ou mock)
-                val url = "https://your-backend.com/checkout/possdk/v68/sessions?setupToken=$setupToken"
+@Serializable
+data class SetupTokenResponse(
+    val setupToken: String
+)
 
-                val request = Request.Builder()
-                    .url(url)
-                    .get()
-                    .build()
+class AuthenticationProvider(
+    private val client: OkHttpClient = OkHttpClient(),
+    private val baseUrl: String = "http://10.0.2.2:8080" // Android emulator talks to localhost via 10.0.2.2
+) {
+    suspend fun createSetupToken(request: SetupTokenRequest): Result<SetupTokenResponse> {
+        return try {
+            val jsonBody = Json.encodeToJsonElement(request).toString()
 
-                val client = OkHttpClient()
-                val response = client.newCall(request).execute()
+            val httpRequest = Request.Builder()
+                .url("$baseUrl/setup-token")
+                .addHeader("Content-Type", "application/json")
+                .post(jsonBody.toRequestBody("application/json".toMediaType()))
+                .build()
 
-                if (!response.isSuccessful) {
-                    return@withContext Result.failure(Exception("Session request failed: ${response.code}"))
-                }
+            val response = client.newCall(httpRequest).execute()
 
-                val body = response.body?.string() ?: return@withContext Result.failure(Exception("Empty response body"))
-
-                val json = JSONObject(body)
-                val sdkData = json.getString("sdkData")
-
-                Result.success(AuthenticationResponse(sdkData))
-
-            } catch (e: Exception) {
-                Result.failure(e)
+            val body = response.body?.string()
+            if (!response.isSuccessful || body == null) {
+                return Result.failure(Exception("HTTP ${response.code}: $body"))
             }
+
+            val setupToken = Json.decodeFromString<SetupTokenResponse>(body)
+            Result.success(setupToken)
+
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

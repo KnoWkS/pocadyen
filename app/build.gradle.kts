@@ -1,8 +1,12 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application") version "8.11.1"// à adapter
+    kotlin("android") version "2.2.0"
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.2.0"
+
 }
+
+
 
 android {
     namespace = "com.example.pocadyen"
@@ -10,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pocadyen"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -57,31 +61,34 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     // Jetpack Compose
-    implementation(platform("androidx.compose:compose-bom:2024.04.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation(platform(libs.compose.bom.v20240401))
+    implementation(libs.ui)
+    implementation(libs.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Kotlin Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     // Adyen Mobile SDK - debug version (test only)
-    val adyenVersion = "2.2.0"
+    val adyenVersion = "2.2.0" // ou la dernière testée stable
+
     debugImplementation("com.adyen.ipp:pos-mobile-debug:$adyenVersion")
     debugImplementation("com.adyen.ipp:payment-tap-to-pay-debug:$adyenVersion")
     debugImplementation("com.adyen.ipp:payment-card-reader-debug:$adyenVersion")
-    implementation("com.adyen.ipp:pos-mobile:$adyenVersion")
-    implementation("com.adyen.ipp:payment-tap-to-pay:$adyenVersion")
+    // Pour l'authentification du marchand
+    implementation("com.adyen.ipp.authentication:authentication:$adyenVersion")
+
+
 
 
     // JSON
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("org.json:json:20231018")
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.json)
     // OkHttp (client HTTP)
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
 
 
 }
